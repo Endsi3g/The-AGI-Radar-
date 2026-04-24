@@ -224,14 +224,25 @@ Modifier `nginx/nginx.conf` avec ton domaine avant de démarrer.
 | **1** | CRM & Leads (Kanban, fiche complète, déduplication) | ✅ Complété |
 | **2** | Moteur de scraping (6 sources, anti-bot, Celery) | ✅ Complété |
 | **3** | IA Ollama/Mistral (emails, SMS, scripts, scoring) | ✅ Complété |
-| **4** | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter) | 🔄 En cours |
-| **5** | Google OAuth + Gmail inbox + Calendar | ⏳ Planifié |
+| **4** | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter) | ✅ Complété |
+| **5** | Google OAuth + Gmail inbox + Calendar | 🔄 En cours |
 | **6** | Carte Leaflet (heatmap, draw zone, itinéraire) | ⏳ Planifié |
 | **7** | Équipe, notifications, KPI dashboard, prod | ⏳ Planifié |
 
 ---
 
 ## Changelog
+
+### v0.4.0 — Phase 4 : Outreach (Gmail API + Twilio SMS/VoIP)
+- `services/gmail_service.py` : envoi MIME multipart (text+HTML), polling inbox, refresh token auto (< 5 min avant expiry)
+- `services/twilio_service.py` : send_sms, initiate_call (enregistrement auto), parse webhooks entrants
+- `tasks/email_tasks.py` : `send_email_message` (retry x3) + `poll_gmail_inbox` (Celery Beat 15 min) — détecte réponses, génère suggestion IA, stocke inbound, mark as read
+- `tasks/sms_tasks.py` : `send_sms_message` (retry x3), normalisation E.164 automatique
+- `tasks/reminder_tasks.py` : `check_followup_reminders` (Beat toutes les heures), crée interaction et remet `next_followup_at` à None
+- `api/v1/comms.py` : webhooks SMS/Voice entrants Twilio, initiation appel, TwiML, recording callback
+- `Teleprompter.tsx` : mode plein écran, navigation clavier (→ / Espace / ←), dots de progression, parseur `=== sections ===`
+- `Dialer.tsx` : bouton Twilio, timer live, mute, états idle/calling/connected/ended
+- `voip/page.tsx` : liste leads searchable, composeur + script côte à côte, bascule téléprompter
 
 ### v0.3.0 — Phase 3 : IA Ollama/Mistral
 - `services/ai_service.py` : génération email (<150 mots), SMS (<160 chars), script d'appel (intro+valeur+3 objections+close), score 0-100, suggestion réponse inbound

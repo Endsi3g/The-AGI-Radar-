@@ -178,8 +178,8 @@ POST /messages/{id}/approve  →  status: approved
 | **1** | ✅ Complété | CRM & Leads (Kanban, fiche lead, déduplication, scoring affichage) |
 | **2** | ✅ Complété | Scraping engine (6 sources, Playwright stealth, Celery, WebSocket) |
 | **3** | ✅ Complété | IA Ollama/Mistral (génération email/SMS/script, scoring, détection langue) |
-| **4** | 🔄 En cours | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter, PDF scripts) |
-| **5** | ⏳ | Google OAuth + Gmail inbox + Calendar auto |
+| **4** | ✅ Complété | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter, webhooks entrants) |
+| **5** | 🔄 En cours | Google OAuth + Gmail inbox + Calendar auto |
 | **6** | ⏳ | Carte Leaflet (heatmap, draw zone, itinéraire OSRM) |
 | **7** | ⏳ | Équipe, notifications WS, KPI dashboard, prod Docker |
 
