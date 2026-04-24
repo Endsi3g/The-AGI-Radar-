@@ -6,13 +6,13 @@ from app.api.v1.leads import router as leads_router
 from app.api.v1.scrape import router as scrape_router
 from app.api.v1.messages import router as messages_router
 from app.api.v1.ai import router as ai_router
+from app.api.v1.comms import router as comms_router
 
 # Placeholder routers for future phases — avoids import errors at boot
 from fastapi import APIRouter as _R
 
 campaigns_router = _R(prefix="/campaigns", tags=["campaigns"])
 google_router = _R(prefix="/google", tags=["google"])
-comms_router = _R(prefix="/comms", tags=["comms"])
 map_router = _R(prefix="/map", tags=["map"])
 
 v1_router = APIRouter(prefix="/api/v1")
