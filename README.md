@@ -226,12 +226,18 @@ Modifier `nginx/nginx.conf` avec ton domaine avant de démarrer.
 | **3** | IA Ollama/Mistral (emails, SMS, scripts, scoring) | ✅ Complété |
 | **4** | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter) | ✅ Complété |
 | **5** | Google OAuth + Gmail inbox + Calendar | ✅ Complété |
-| **6** | Carte Leaflet (heatmap, draw zone, itinéraire) | 🔄 En cours |
-| **7** | Équipe, notifications, KPI dashboard, prod | ⏳ Planifié |
+| **6** | Carte Leaflet (heatmap, draw zone, itinéraire) | ✅ Complété |
+| **7** | Équipe, notifications, KPI dashboard, prod | 🔄 En cours |
 
 ---
 
 ## Changelog
+
+### v0.6.0 — Phase 6 : Carte Leaflet Interactive
+- `api/v1/map.py` : `GET /map/leads` (GeoJSON FeatureCollection), `POST /map/zone-query` (point-in-polygon sans PostGIS), `POST /map/itinerary` (optimisation OSRM trip service, max 20 arrêts)
+- `components/map/LeafletMap.tsx` : `MapContainer` react-leaflet, marqueurs colorés par statut (6 couleurs), popup au clic, heatmap layer (leaflet.heat), draw zone (leaflet-draw, polygone + rectangle), route OSRM (Polyline pointillée)
+- `app/(dashboard)/map/page.tsx` : barre de contrôle (légende, toggle heatmap, toggle dessiner zone), panneau latéral zone (liste leads + itinéraire optimisé avec durée/distance), import SSR-disabled
+- Import dynamique `{ ssr: false }` obligatoire — Leaflet nécessite `window`
 
 ### v0.5.0 — Phase 5 : Google OAuth + Gmail Inbox + Calendar Auto
 - `api/v1/google.py` : flux OAuth 2.0 complet — `GET /google/auth-url` (state signé JWT), `GET /google/callback` (échange code → tokens + google_email), `DELETE /google/disconnect`, `GET /google/status`

@@ -8,12 +8,12 @@ from app.api.v1.messages import router as messages_router
 from app.api.v1.ai import router as ai_router
 from app.api.v1.comms import router as comms_router
 from app.api.v1.google import router as google_router
+from app.api.v1.map import router as map_router
 
 # Placeholder routers for future phases — avoids import errors at boot
 from fastapi import APIRouter as _R
 
 campaigns_router = _R(prefix="/campaigns", tags=["campaigns"])
-map_router = _R(prefix="/map", tags=["map"])
 
 v1_router = APIRouter(prefix="/api/v1")
 v1_router.include_router(auth_router)
