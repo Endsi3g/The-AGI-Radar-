@@ -52,6 +52,8 @@ class Settings(BaseSettings):
     playwright_headless: bool = True
     scraper_proxy_url: str = ""
     linkedin_li_at_cookie: str = ""
+    instagram_username: str = ""
+    instagram_password: str = ""
 
 
 settings = Settings()
