@@ -1,4 +1,4 @@
-# HGI Radar — Système de Prospection Intelligent
+# AGI Radar — Système de Prospection Intelligent
 
 Plateforme de prospection B2B complète pour agences numériques québécoises. Le système automatise l'intégralité du cycle de prospection : scraping gratuit de leads → enrichissement IA → messages ultra-personnalisés → envoi avec approbation humaine → suivi CRM → intégrations Google.
 
