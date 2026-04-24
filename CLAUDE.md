@@ -175,10 +175,10 @@ POST /messages/{id}/approve  →  status: approved
 | Phase | Statut | Description |
 |---|---|---|
 | **0** | ✅ Complété | Infrastructure (FastAPI, Next.js, PostgreSQL, Docker, Auth JWT) |
-| **1** | 🔄 Suivante | CRM & Leads (Kanban, fiche lead, déduplication, scoring affichage) |
-| **2** | ⏳ | Scraping engine (6 sources, Playwright stealth, Celery, WebSocket) |
-| **3** | ⏳ | IA Ollama/Mistral (génération email/SMS/script, scoring, détection langue) |
-| **4** | ⏳ | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter, PDF scripts) |
+| **1** | ✅ Complété | CRM & Leads (Kanban, fiche lead, déduplication, scoring affichage) |
+| **2** | ✅ Complété | Scraping engine (6 sources, Playwright stealth, Celery, WebSocket) |
+| **3** | ✅ Complété | IA Ollama/Mistral (génération email/SMS/script, scoring, détection langue) |
+| **4** | 🔄 En cours | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter, PDF scripts) |
 | **5** | ⏳ | Google OAuth + Gmail inbox + Calendar auto |
 | **6** | ⏳ | Carte Leaflet (heatmap, draw zone, itinéraire OSRM) |
 | **7** | ⏳ | Équipe, notifications WS, KPI dashboard, prod Docker |

@@ -221,13 +221,44 @@ Modifier `nginx/nginx.conf` avec ton domaine avant de démarrer.
 | Phase | Contenu | Statut |
 |---|---|---|
 | **0** | Infrastructure (FastAPI, Next.js, PostgreSQL, Docker) | ✅ Complété |
-| **1** | CRM & Leads (Kanban, fiche complète, déduplication) | 🔄 En cours |
-| **2** | Moteur de scraping (6 sources, anti-bot, Celery) | ⏳ Planifié |
-| **3** | IA Ollama/Mistral (emails, SMS, scripts, scoring) | ⏳ Planifié |
-| **4** | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter) | ⏳ Planifié |
+| **1** | CRM & Leads (Kanban, fiche complète, déduplication) | ✅ Complété |
+| **2** | Moteur de scraping (6 sources, anti-bot, Celery) | ✅ Complété |
+| **3** | IA Ollama/Mistral (emails, SMS, scripts, scoring) | ✅ Complété |
+| **4** | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter) | 🔄 En cours |
 | **5** | Google OAuth + Gmail inbox + Calendar | ⏳ Planifié |
 | **6** | Carte Leaflet (heatmap, draw zone, itinéraire) | ⏳ Planifié |
 | **7** | Équipe, notifications, KPI dashboard, prod | ⏳ Planifié |
+
+---
+
+## Changelog
+
+### v0.3.0 — Phase 3 : IA Ollama/Mistral
+- `services/ai_service.py` : génération email (<150 mots), SMS (<160 chars), script d'appel (intro+valeur+3 objections+close), score 0-100, suggestion réponse inbound
+- `services/language_service.py` : détection automatique FR/EN (langdetect + heuristique)
+- `services/scoring_service.py` : scoring heuristique rapide + chemin IA async, persisté en DB
+- `api/v1/ai.py` : `/ai/generate-email|sms|script`, `/ai/leads/{id}/score`, `/ai/batch-score`, `/ai/batch-generate`
+- Inbox d'approbation complète : édition inline, approbation 1-clic, rejet avec raison
+- Panneau IA sur chaque fiche lead (3 canaux + bouton scorer)
+- Génération et scoring en masse via Celery (50 leads ≈ 10 min)
+
+### v0.2.0 — Phase 2 : Moteur de scraping
+- 6 scrapers : Google Maps (JSON-LD), Pages Jaunes CA, Yelp, LinkedIn, Instagram (instagrapi), Facebook
+- Anti-bot 3 couches : playwright-stealth, délais aléatoires 1.5–4s, scroll/mouse humain
+- Déduplication : google_place_id → téléphone normalisé → domaine → fuzzy name×city (rapidfuzz WRatio > 85)
+- Progression en temps réel par lead via Redis pub/sub + WebSocket
+- Frontend : formulaire de lancement, journal terminal live, historique des jobs
+
+### v0.1.0 — Phase 1 : CRM & Leads
+- Liste leads avec filtres (statut, secteur, recherche texte)
+- Vue Kanban drag-and-drop avec changement de statut
+- Fiche lead complète (contact, décideur, timeline d'interactions, relances)
+- Dashboard avec KPIs, mini pipeline, leads récents
+
+### v0.0.1 — Phase 0 : Infrastructure
+- Backend FastAPI async + 8 modèles SQLAlchemy + migration Alembic
+- Auth JWT (access + refresh), rôles admin/sales/viewer
+- Docker Compose 8 services (postgres, redis, ollama, backend, worker, beat, flower, frontend)
 
 ---
 
@@ -242,6 +273,8 @@ Modifier `nginx/nginx.conf` avec ton domaine avant de démarrer.
 | `TWILIO_AUTH_TOKEN` | Token Twilio | Pour SMS/VoIP |
 | `TWILIO_FROM_NUMBER` | Numéro Twilio (format E.164) | Pour SMS/VoIP |
 | `LINKEDIN_LI_AT_COOKIE` | Cookie `li_at` LinkedIn | Pour scraping LinkedIn |
+| `INSTAGRAM_USERNAME` | Compte Instagram (business) | Pour scraping Instagram |
+| `INSTAGRAM_PASSWORD` | Mot de passe Instagram | Pour scraping Instagram |
 | `OLLAMA_MODEL` | Modèle Ollama (défaut: `mistral`) | Optionnel |
 | `SCRAPER_PROXY_URL` | URL proxy SOCKS5 pour le scraping | Optionnel |
 
