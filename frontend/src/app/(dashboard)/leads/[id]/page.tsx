@@ -10,6 +10,7 @@ import {
 import { useLead, useLeadInteractions, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { InteractionTimeline } from "@/components/leads/InteractionTimeline";
 import { LeadScoreBadge } from "@/components/leads/LeadScoreBadge";
+import { AIGeneratePanel } from "@/components/messages/AIGeneratePanel";
 import { PIPELINE_COLUMNS, STATUS_LABELS, STATUS_COLORS, SOURCE_ICONS } from "@/types/lead";
 import { formatDistanceToNow, format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -254,6 +255,9 @@ export default function LeadDetailPage() {
               </button>
             )}
           </div>
+
+          {/* AI generation */}
+          <AIGeneratePanel leadId={lead.id} leadName={lead.business_name} />
 
           {/* Meta */}
           <div className="bg-white border border-gray-200 rounded-xl p-5">
