@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "leads": "Leads / CRM",
+    "scrape": "Prospecting",
+    "map": "Map",
+    "campaigns": "Campaigns",
+    "messages": "Messages",
+    "voip": "Calls",
+    "settings": "Settings"
+  },
+  "lead": {
+    "status": {
+      "nouveau": "New",
+      "contacté": "Contacted",
+      "réponse": "Reply received",
+      "rdv": "Meeting scheduled",
+      "fermé": "Closed",
+      "perdu": "Lost"
+    }
+  },
+  "actions": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "send": "Send",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "generate": "Generate"
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password"
+  }
+}
