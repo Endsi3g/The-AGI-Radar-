@@ -1,8 +1,20 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
-import { Users, MessageSquare, KanbanSquare, TrendingUp, ArrowRight, Search } from "lucide-react";
+import {
+  Users,
+  MessageSquare,
+  KanbanSquare,
+  TrendingUp,
+  ArrowRight,
+  Search,
+  Star,
+  CalendarCheck,
+  Sparkles,
+} from "lucide-react";
 import { usePipelineStats, useLeads } from "@/hooks/useLeads";
+import { useDashboardStats } from "@/hooks/useDashboard";
 import { LeadCard } from "@/components/leads/LeadCard";
 
 function StatCard({
@@ -11,15 +23,19 @@ function StatCard({
   color,
   icon: Icon,
   href,
+  sub,
 }: {
   label: string;
   value: number | string;
   color: string;
   icon: React.ElementType;
   href?: string;
+  sub?: string;
 }) {
   const card = (
-    <div className={`bg-white rounded-xl border p-5 hover:shadow-sm transition-shadow ${href ? "cursor-pointer" : ""}`}>
+    <div
+      className={`bg-white rounded-xl border p-5 hover:shadow-sm transition-shadow ${href ? "cursor-pointer" : ""}`}
+    >
       <div className="flex items-start justify-between mb-3">
         <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${color}`}>
           <Icon size={18} className="text-white" />
@@ -28,20 +44,61 @@ function StatCard({
       </div>
       <div className="text-2xl font-bold text-gray-900">{value}</div>
       <div className="text-sm text-gray-500 mt-1">{label}</div>
+      {sub && <div className="text-xs text-gray-400 mt-0.5">{sub}</div>}
     </div>
   );
-
   return href ? <Link href={href}>{card}</Link> : card;
 }
 
+function ProgressBar({
+  label,
+  count,
+  max,
+  color,
+}: {
+  label: string;
+  count: number;
+  max: number;
+  color: string;
+}) {
+  const pct = max > 0 ? Math.round((count / max) * 100) : 0;
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-sm text-gray-600 w-28 shrink-0 truncate">{label}</span>
+      <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+        <div className={`${color} h-2 rounded-full transition-all`} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-xs text-gray-500 w-6 text-right shrink-0">{count}</span>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
-  const { data: stats = {} } = usePipelineStats();
+  const { data: pipelineStats = {} } = usePipelineStats();
+  const { data: dsStats } = useDashboardStats();
   const { data: recentLeads = [] } = useLeads({ limit: 6, offset: 0 });
 
-  const total = Object.values(stats).reduce((a, b) => a + b, 0);
-  const nouveau = stats["nouveau"] || 0;
-  const rdv = stats["rdv"] || 0;
-  const contacte = stats["contacté"] || 0;
+  const total = Object.values(pipelineStats).reduce((a, b) => a + b, 0);
+  const nouveau = pipelineStats["nouveau"] || 0;
+  const rdv = pipelineStats["rdv"] || 0;
+  const contacte = pipelineStats["contacté"] || 0;
+
+  const conversionRate =
+    dsStats?.conversion_rate != null
+      ? `${Math.round(dsStats.conversion_rate * 100)}%`
+      : rdv > 0 && total > 0
+      ? `${Math.round((rdv / total) * 100)}%`
+      : "—";
+
+  const avgScore =
+    dsStats?.avg_ai_score != null ? Math.round(dsStats.avg_ai_score) : "—";
+
+  const newLeads30d = dsStats?.new_leads_30d ?? nouveau;
+
+  const topCities = dsStats?.top_cities ?? [];
+  const topIndustries = dsStats?.top_industries ?? [];
+  const cityMax = topCities.reduce((m, c) => Math.max(m, c.count), 0);
+  const industryMax = topIndustries.reduce((m, c) => Math.max(m, c.count), 0);
 
   return (
     <div>
@@ -58,12 +115,37 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* KPI cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* KPI cards — row 1 */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <StatCard label="Total leads" value={total} color="bg-blue-500" icon={Users} href="/leads" />
         <StatCard label="Nouveaux" value={nouveau} color="bg-sky-500" icon={TrendingUp} href="/leads?status=nouveau" />
         <StatCard label="Contactés" value={contacte} color="bg-amber-500" icon={MessageSquare} href="/leads?status=contact%C3%A9" />
         <StatCard label="RDV planifiés" value={rdv} color="bg-violet-500" icon={KanbanSquare} href="/leads?status=rdv" />
+      </div>
+
+      {/* KPI cards — row 2 */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <StatCard
+          label="Taux de conversion"
+          value={conversionRate}
+          color="bg-emerald-500"
+          icon={CalendarCheck}
+          sub="RDV / total leads"
+        />
+        <StatCard
+          label="Score moyen IA"
+          value={avgScore}
+          color="bg-orange-500"
+          icon={Star}
+          sub="Sur 100"
+        />
+        <StatCard
+          label="Nouveaux (30 j)"
+          value={newLeads30d}
+          color="bg-pink-500"
+          icon={Sparkles}
+          href="/leads"
+        />
       </div>
 
       {/* Pipeline mini-bar */}
@@ -75,7 +157,7 @@ export default function DashboardPage() {
               Voir tout <ArrowRight size={14} />
             </Link>
           </div>
-          <div className="flex gap-1 h-3 rounded-full overflow-hidden">
+          <div className="flex gap-1 h-3 rounded-full overflow-hidden mb-3">
             {[
               { key: "nouveau", color: "bg-blue-400" },
               { key: "contacté", color: "bg-amber-400" },
@@ -84,7 +166,7 @@ export default function DashboardPage() {
               { key: "fermé", color: "bg-gray-300" },
               { key: "perdu", color: "bg-red-300" },
             ].map(({ key, color }) => {
-              const count = stats[key] || 0;
+              const count = pipelineStats[key] || 0;
               if (!count) return null;
               return (
                 <div
@@ -96,7 +178,7 @@ export default function DashboardPage() {
               );
             })}
           </div>
-          <div className="flex flex-wrap gap-4 mt-3">
+          <div className="flex flex-wrap gap-4">
             {[
               { key: "nouveau", color: "bg-blue-400", label: "Nouveau" },
               { key: "contacté", color: "bg-amber-400", label: "Contacté" },
@@ -107,10 +189,48 @@ export default function DashboardPage() {
             ].map(({ key, color, label }) => (
               <div key={key} className="flex items-center gap-1.5 text-xs text-gray-600">
                 <span className={`w-2 h-2 rounded-full ${color}`} />
-                {label} ({stats[key] || 0})
+                {label} ({pipelineStats[key] || 0})
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Top cities + Top industries */}
+      {(topCities.length > 0 || topIndustries.length > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {topCities.length > 0 && (
+            <div className="bg-white border border-gray-200 rounded-xl p-5">
+              <h2 className="font-semibold text-gray-700 mb-4">Top villes</h2>
+              <div className="space-y-3">
+                {topCities.slice(0, 6).map((c) => (
+                  <ProgressBar
+                    key={c.city}
+                    label={c.city}
+                    count={c.count}
+                    max={cityMax}
+                    color="bg-blue-400"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          {topIndustries.length > 0 && (
+            <div className="bg-white border border-gray-200 rounded-xl p-5">
+              <h2 className="font-semibold text-gray-700 mb-4">Top secteurs</h2>
+              <div className="space-y-3">
+                {topIndustries.slice(0, 6).map((i) => (
+                  <ProgressBar
+                    key={i.industry}
+                    label={i.industry}
+                    count={i.count}
+                    max={industryMax}
+                    color="bg-violet-400"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

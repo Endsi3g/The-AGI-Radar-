@@ -15,6 +15,13 @@ from app.core.exceptions import NotFoundError, ConflictError
 router = APIRouter(prefix="/users", tags=["users"])
 
 
+@router.get("/me", response_model=UserResponse)
+async def get_me(
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    return current_user
+
+
 @router.get("", response_model=list[UserResponse])
 async def list_users(
     db: Annotated[AsyncSession, Depends(get_db)],

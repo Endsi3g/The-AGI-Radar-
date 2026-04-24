@@ -227,11 +227,24 @@ Modifier `nginx/nginx.conf` avec ton domaine avant de démarrer.
 | **4** | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter) | ✅ Complété |
 | **5** | Google OAuth + Gmail inbox + Calendar | ✅ Complété |
 | **6** | Carte Leaflet (heatmap, draw zone, itinéraire) | ✅ Complété |
-| **7** | Équipe, notifications, KPI dashboard, prod | 🔄 En cours |
+| **7** | Équipe, notifications WS, KPI dashboard, shadcn/ui | ✅ Complété |
 
 ---
 
 ## Changelog
+
+### v0.7.0 — Phase 7 : Équipe + Notifications WS + KPI Dashboard + Migration shadcn/ui
+- `api/v1/notifications.py` : WebSocket `/ws/notifications?token=<jwt>` — Redis pub/sub, ping 30s, reconnexion propre
+- `api/v1/dashboard.py` : `GET /dashboard/stats` — pipeline complet, messages, leads 30j, score moyen, taux de conversion, top 5 villes/secteurs
+- `api/v1/users.py` : ajout `GET /users/me` (utilisé par la TopBar)
+- `settings/team/page.tsx` : tableau équipe complet — avatar initiales, badge rôle, statut actif, modal invitation, désactiver/supprimer (admin only)
+- `hooks/useNotifications.ts` : WebSocket hook, reconnexion auto x3 (2/4/8s), 50 notifs max, markAllRead
+- `hooks/useDashboard.ts` : `useDashboardStats()` avec interface `DashboardStats` complète
+- `components/layout/TopBar.tsx` : cloche avec badge rouge, dropdown 5 dernières notifs, avatar initiales, affichage nom utilisateur
+- `dashboard/page.tsx` : 7 KPI cards (total, nouveaux, contactés, RDV, conversion, score moyen, 30j), top villes + secteurs avec barres
+- **Migration shadcn/ui complète** : 20 composants dans `src/components/ui/` — Button, Card, Badge, Input, Label, Textarea, Dialog, Select, Tabs, DropdownMenu, Avatar, Separator, Switch, Progress, Skeleton, Alert, Table, Toast/Toaster, Tooltip, useToast hook
+- `components.json` : configuration shadcn/ui (style default, baseColor slate, cssVariables true)
+- Toutes les deps Radix UI, CVA, tailwindcss-animate déjà présentes dans package.json
 
 ### v0.6.0 — Phase 6 : Carte Leaflet Interactive
 - `api/v1/map.py` : `GET /map/leads` (GeoJSON FeatureCollection), `POST /map/zone-query` (point-in-polygon sans PostGIS), `POST /map/itinerary` (optimisation OSRM trip service, max 20 arrêts)
