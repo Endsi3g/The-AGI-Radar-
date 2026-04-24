@@ -12,6 +12,7 @@ import {
   Phone,
   Settings,
   Radar,
+  Inbox,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,7 @@ const navItems = [
   { href: "/map", label: "Carte", icon: Map },
   { href: "/campaigns", label: "Campagnes", icon: Megaphone },
   { href: "/messages", label: "Messages", icon: MessageSquare },
+  { href: "/messages/inbox", label: "Boîte de réception", icon: Inbox, indent: true },
   { href: "/voip", label: "Appels", icon: Phone },
   { href: "/settings", label: "Paramètres", icon: Settings },
 ];
@@ -37,18 +39,19 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map(({ href, label, icon: Icon }) => (
+        {navItems.map(({ href, label, icon: Icon, indent }) => (
           <Link
             key={href}
             href={href}
             className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-              pathname === href || pathname.startsWith(href + "/")
+              "flex items-center gap-3 rounded-lg text-sm font-medium transition-colors",
+              indent ? "px-3 py-2 ml-4" : "px-3 py-2.5",
+              pathname === href
                 ? "bg-blue-600 text-white"
                 : "text-gray-400 hover:text-white hover:bg-gray-800"
             )}
           >
-            <Icon size={18} />
+            <Icon size={indent ? 15 : 18} />
             {label}
           </Link>
         ))}

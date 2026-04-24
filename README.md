@@ -225,13 +225,23 @@ Modifier `nginx/nginx.conf` avec ton domaine avant de démarrer.
 | **2** | Moteur de scraping (6 sources, anti-bot, Celery) | ✅ Complété |
 | **3** | IA Ollama/Mistral (emails, SMS, scripts, scoring) | ✅ Complété |
 | **4** | Outreach (Gmail API, Twilio SMS/VoIP, téléprompter) | ✅ Complété |
-| **5** | Google OAuth + Gmail inbox + Calendar | 🔄 En cours |
-| **6** | Carte Leaflet (heatmap, draw zone, itinéraire) | ⏳ Planifié |
+| **5** | Google OAuth + Gmail inbox + Calendar | ✅ Complété |
+| **6** | Carte Leaflet (heatmap, draw zone, itinéraire) | 🔄 En cours |
 | **7** | Équipe, notifications, KPI dashboard, prod | ⏳ Planifié |
 
 ---
 
 ## Changelog
+
+### v0.5.0 — Phase 5 : Google OAuth + Gmail Inbox + Calendar Auto
+- `api/v1/google.py` : flux OAuth 2.0 complet — `GET /google/auth-url` (state signé JWT), `GET /google/callback` (échange code → tokens + google_email), `DELETE /google/disconnect`, `GET /google/status`
+- `api/v1/google.py` : `GET /google/calendar/events` (liste), `POST /google/calendar/events` (création manuelle), `DELETE /google/calendar/events/{id}`
+- `services/calendar_service.py` : `create_rdv_event` avec Google Meet + rappels email/popup, `create_followup_event`, `delete_event`, `list_upcoming_events`
+- `api/v1/leads.py` : hook automatique — statut lead → `rdv` crée un événement Google Calendar si compte connecté
+- `app/(dashboard)/settings/integrations/page.tsx` : UI connect/disconnect Google, statut, liste des 5 prochains événements Calendar avec lien Meet
+- `app/(dashboard)/settings/page.tsx` : hub de navigation vers les sous-pages paramètres
+- `app/(dashboard)/messages/inbox/page.tsx` : boîte de réception emails entrants, expansion corps complet, suggestion IA de réponse avec bouton "Utiliser cette réponse"
+- `components/layout/Sidebar.tsx` : ajout lien "Boîte de réception" sous Messages
 
 ### v0.4.0 — Phase 4 : Outreach (Gmail API + Twilio SMS/VoIP)
 - `services/gmail_service.py` : envoi MIME multipart (text+HTML), polling inbox, refresh token auto (< 5 min avant expiry)

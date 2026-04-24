@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Annotated
 from uuid import UUID
 
@@ -13,6 +13,7 @@ from app.models.user import User
 from app.schemas.lead import LeadCreate, LeadUpdate, LeadResponse, LeadGeoJSON
 from app.dependencies import get_current_user, require_role
 from app.core.exceptions import NotFoundError
+from app.core.logging import logger
 
 router = APIRouter(prefix="/leads", tags=["leads"])
 
@@ -127,6 +128,30 @@ async def update_lead(
             metadata_={"previous_status": old_status, "new_status": updates["status"]},
         )
         db.add(interaction)
+
+        # Auto-create Google Calendar RDV event when lead reaches 'rdv' status
+        if updates["status"] == "rdv" and current_user.google_connected:
+            try:
+                from app.models.calendar_event import CalendarEvent
+                from app.services.calendar_service import create_rdv_event
+
+                rdv_time = lead.next_followup_at or (datetime.now(timezone.utc) + timedelta(days=1))
+                event_data = await create_rdv_event(
+                    user=current_user,
+                    lead=lead,
+                    start_time=rdv_time,
+                )
+                cal_event = CalendarEvent(
+                    lead_id=lead.id,
+                    user_id=current_user.id,
+                    google_event_id=event_data["google_event_id"],
+                    start_time=rdv_time,
+                    end_time=rdv_time + timedelta(minutes=30),
+                    event_type="rdv",
+                )
+                db.add(cal_event)
+            except Exception as exc:
+                logger.warning("auto_calendar_event_failed", lead_id=str(lead.id), error=str(exc))
 
     await db.commit()
     await db.refresh(lead)
