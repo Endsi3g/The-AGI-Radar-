@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, or_
 
 from app.database import get_db
 from app.models.lead import Lead
@@ -26,6 +26,7 @@ async def list_leads(
     industry: str | None = None,
     score_min: int | None = None,
     score_max: int | None = None,
+    search: str | None = None,
     limit: int = Query(50, le=200),
     offset: int = 0,
 ):
@@ -40,6 +41,14 @@ async def list_leads(
         filters.append(Lead.ai_score >= score_min)
     if score_max is not None:
         filters.append(Lead.ai_score <= score_max)
+    if search:
+        filters.append(
+            or_(
+                Lead.business_name.ilike(f"%{search}%"),
+                Lead.city.ilike(f"%{search}%"),
+                Lead.owner_name.ilike(f"%{search}%"),
+            )
+        )
 
     # Sales see only assigned leads; admin/viewer see all
     if current_user.role == "sales":
